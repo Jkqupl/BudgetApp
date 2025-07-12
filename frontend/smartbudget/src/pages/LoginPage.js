@@ -1,3 +1,5 @@
+
+
 function LoginPage() {
   return (
     <div className="login-page">
@@ -16,3 +18,5 @@ function LoginPage() {
     </div>
   );
 }
+
+export default LoginPage;
