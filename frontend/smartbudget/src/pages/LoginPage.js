@@ -2,7 +2,7 @@
 
 function LoginPage() {
   return (
-    <div className="login-page">
+    <div className="text-3xl font-bold underline">
       <h1>Login</h1>
       <form>
         <div className="form-group">
