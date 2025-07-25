@@ -1,4 +1,4 @@
-
+import { Link } from 'react-router';
 
 function LoginPage() {
   return (
@@ -13,7 +13,7 @@ function LoginPage() {
           <label htmlFor="password">Password</label>
           <input type="password" id="password" name="password" required />
         </div>
-        <button type="submit">Login</button>
+        <Link to="/dashboard">Login</Link>
       </form>
     </div>
   );
