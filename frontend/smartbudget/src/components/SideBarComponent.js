@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Sidebar, useSidebar, Overlay, Button } from '@rewind-ui/core';
 import { NavLink, Outlet } from 'react-router-dom';
 
-
 function SideBarComponent() {
   const [expanded, setExpanded] = useState(true);
   const [mobile, setMobile] = useState(false);
@@ -18,9 +17,6 @@ function SideBarComponent() {
         className="absolute"
       >
         <Sidebar.Head>
-          <Sidebar.Head.Logo>
-            <img src="/images/rewind.svg" width={48} height={48} alt="Rewind-UI" />
-          </Sidebar.Head.Logo>
           <Sidebar.Head.Title>Rewind-UI</Sidebar.Head.Title>
           <Sidebar.Head.Toggle />
         </Sidebar.Head>
@@ -28,66 +24,106 @@ function SideBarComponent() {
     <Sidebar.Nav>
         <Sidebar.Nav.Section>
           <Sidebar.Nav.Section.Item
-            // icon={<RocketLaunch />}
-            label="Home"
-            as={NavLink}
-            to="/"
-            end
-            activeClassName="active"
-          />
+          as={({ className }) => (
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `${className} ${isActive ? "active bg-gray-100" : ""}`
+              }
+            >
+              Home
+            </NavLink>
+          )}
+        />
         </Sidebar.Nav.Section>
 
       <Sidebar.Nav.Section>
         <Sidebar.Nav.Section.Title>Budget Management</Sidebar.Nav.Section.Title>
 
         <Sidebar.Nav.Section.Item
-          // icon={<UserCircle />}
-          label="Dashboard"
-          as={NavLink}
-          to="/dashBoard"
-          activeClassName="active"
+          as={({ className }) => (
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) =>
+                `${className} ${isActive ? "active bg-gray-100" : ""}`
+              }
+            >
+              Dashboard
+            </NavLink>
+          )}
         />
+
         <Sidebar.Nav.Section.Item
-          // icon={<ArrowDownCircle />}
-          label="Income"
-          as={NavLink}
-          to="/income"
-          activeClassName="active"
+          as={({ className }) => (
+            <NavLink
+              to="/income"
+              className={({ isActive }) =>
+                `${className} ${isActive ? "active bg-gray-100" : ""}`
+              }
+            >
+              Income
+            </NavLink>
+          )}
         />
+
         <Sidebar.Nav.Section.Item
-          // icon={<ArrowUpCircle />}
-          label="Expenses"
-          as={NavLink}
-          to="/expenses"
-          activeClassName="active"
+          as={({ className }) => (
+            <NavLink
+              to="/expenses"
+              className={({ isActive }) =>
+                `${className} ${isActive ? "active bg-gray-100" : ""}`
+              }
+            >
+              Expenses
+            </NavLink>
+          )}
         />
+
         <Sidebar.Nav.Section.Item
-          // icon={<Wallet />}
-          label="Budget"
-          as={NavLink}
-          to="/budget"
-          activeClassName="active"
+          as={({ className }) => (
+            <NavLink
+              to="/budget"
+              className={({ isActive }) =>
+                `${className} ${isActive ? "active bg-gray-100" : ""}`
+              }
+            >
+              Budget
+            </NavLink>
+          )}
         />
+
         <Sidebar.Nav.Section.Item
-          // icon={<Clock />}
-          label="History"
-          as={NavLink}
-          to="/history"
-          activeClassName="active"
+          as={({ className }) => (
+            <NavLink
+              to="/history"
+              className={({ isActive }) =>
+                `${className} ${isActive ? "active bg-gray-100" : ""}`
+              }
+            >
+              History
+            </NavLink>
+          )}
         />
+
       </Sidebar.Nav.Section>
 
       <Sidebar.Nav.Section>
         <Sidebar.Nav.Section.Title>Support</Sidebar.Nav.Section.Title>
 
         <Sidebar.Nav.Section.Item
-          // icon={<Shield />}
-          label="Login"
-          as={NavLink}
-          to="/login"
-          activeClassName="active"
+          as={({ className }) => (
+            <NavLink
+              to="/login"
+              className={({ isActive }) =>
+                `${className} ${isActive ? "active bg-gray-100" : ""}`
+              }
+            >
+              Logout
+            </NavLink>
+          )}
         />
       </Sidebar.Nav.Section>
+
     </Sidebar.Nav>
 
         <Sidebar.Footer>
