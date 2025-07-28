@@ -1,17 +1,14 @@
 import logo from './logo.svg';
+import './index.css';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './components/LoginPage';
+import AppRoutes from './routes/AppRoutes';
+
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element = {<LoginPage/>} />
-        {/* <Route path ="/MainPage" element ={<MainPage/>}/> */}
-        {/* <Route path = "/RankingsPage" element = {<RankingsPage/>}/> */}
-        {/* <Route path = "/Leaderboard" element = {<Leaderboard/>}/> */}
-      </Routes>
+       <AppRoutes />
     </Router>
   );
 }
