@@ -5,11 +5,12 @@ import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import MainLayout from '../layouts/MainLayout'; // includes Sidebar
 
-import MainPage from '../pages/MainPage';
+import MainPage from '../pages/DashboardPage';
 import IncomePage from '../pages/IncomePage';
 import ExpensesPage from '../pages/ExpensesPage';
 import BudgetPage from '../pages/BudgetPage';
 import HistoryPage from '../pages/HistoryPage';
+import DashboardPage from '../pages/DashboardPage';
 
 const AppRoutes = () => (
   <Routes>
@@ -19,7 +20,7 @@ const AppRoutes = () => (
 
     {/* Protected/main routes (with sidebar via MainLayout) */}
     <Route element={<MainLayout />}>
-      <Route path="/dashboard" element={<MainPage />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/income" element={<IncomePage />} />
       <Route path="/expenses" element={<ExpensesPage />} />
       <Route path="/budget" element={<BudgetPage />} />
