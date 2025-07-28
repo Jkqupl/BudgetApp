@@ -5,7 +5,6 @@ import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import MainLayout from '../layouts/MainLayout'; // includes Sidebar
 
-import MainPage from '../pages/DashboardPage';
 import IncomePage from '../pages/IncomePage';
 import ExpensesPage from '../pages/ExpensesPage';
 import BudgetPage from '../pages/BudgetPage';

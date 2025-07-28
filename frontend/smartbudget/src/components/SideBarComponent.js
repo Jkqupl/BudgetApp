@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sidebar, useSidebar, Overlay, Button } from '@rewind-ui/core';
+import { Sidebar, useSidebar, Overlay} from '@rewind-ui/core';
 import { NavLink, Outlet } from 'react-router-dom';
 
 function SideBarComponent() {
