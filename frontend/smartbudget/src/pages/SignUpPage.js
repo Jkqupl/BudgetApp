@@ -18,7 +18,7 @@ const SignUp = () => {
         try{
             const result = await signUpNewUser(email, password);
             if (result.success) {
-                Navigate("/dashboard");
+                Navigate("/profile");
                 await updateUserProfile({
                 uuid: result.data.user.id,
                 email: email,

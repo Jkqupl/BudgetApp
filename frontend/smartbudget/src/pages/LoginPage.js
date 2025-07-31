@@ -18,7 +18,7 @@ const SignIn = () => {
         try{
             const result = await signInUser(email, password);
             if (result.success) {
-                Navigate("/dashboard");
+                Navigate("/profile");
             } 
         } catch (err) {
               setError("Failed to create an account. Please try again.");
