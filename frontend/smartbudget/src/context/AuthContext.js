@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        const session = supabase.auth.getSession().then(({ data: {session} }) => {
+        supabase.auth.getSession().then(({ data: {session} }) => {
             setSession(session);
         });
 

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Eye, EyeOff, Camera, User, X } from 'lucide-react'; // Added X icon
 import { UserAuth } from '../context/AuthContext';
+import { useCallback } from "react";
+
 
 function ProfilePage() {
   const { session, getUserProfile, updateUserProfile, uploadProfilePicture, deleteProfilePicture } = UserAuth();
@@ -21,13 +23,8 @@ function ProfilePage() {
 
   const [removeProfilePicture, setRemoveProfilePicture] = useState(false); // Flag for deletion
 
-  useEffect(() => {
-    if (session?.user) {
-      loadProfile();
-    }
-  }, [session]);
 
-  const loadProfile = async () => {
+  const loadProfile = useCallback( async () => {
     try {
       setLoading(true);
       const result = await getUserProfile(session.user.id);
@@ -55,7 +52,13 @@ function ProfilePage() {
     } finally {
       setLoading(false);
     }
-  };
+  },[session?.user.id,session?.user?.email, getUserProfile]);
+
+   useEffect(() => {
+    if (session?.user) {
+      loadProfile();
+    }
+  }, [session,loadProfile]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
