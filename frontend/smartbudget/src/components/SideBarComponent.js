@@ -1,12 +1,27 @@
 import React, { useState } from 'react';
 import { Sidebar, useSidebar, Overlay} from '@rewind-ui/core';
 import { NavLink, Outlet } from 'react-router-dom';
+import { UserAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function SideBarComponent() {
   const [expanded, setExpanded] = useState(true);
   const [mobile, setMobile] = useState(false);
   const sidebar = useSidebar();
 
+  const navigate = useNavigate();
+  const { signOut } = UserAuth();
+
+  const handlelogout = async (e) => {
+    e.preventDefault();
+    try{  
+      await signOut();
+      navigate('/');
+    }catch (error) {
+      console.error("Error signing out:", error);
+    }
+  
+  };
   return (
     <div className="relative flex flex-row w-full h-screen">
       <Sidebar color="white" shadow="sm"
@@ -26,12 +41,12 @@ function SideBarComponent() {
           <Sidebar.Nav.Section.Item
           as={({ className }) => (
             <NavLink
-              to="/"
+              to="/profile"
               className={({ isActive }) =>
                 `${className} ${isActive ? "active bg-gray-100" : ""}`
               }
             >
-              Home
+              Profile
             </NavLink>
           )}
         />
@@ -111,17 +126,9 @@ function SideBarComponent() {
         <Sidebar.Nav.Section.Title>Support</Sidebar.Nav.Section.Title>
 
         <Sidebar.Nav.Section.Item
-          as={({ className }) => (
-            <NavLink
-              to="/login"
-              className={({ isActive }) =>
-                `${className} ${isActive ? "active bg-gray-100" : ""}`
-              }
-            >
-              Logout
-            </NavLink>
-          )}
-        />
+          onClick = {handlelogout}
+          label = "logout"/>
+        
       </Sidebar.Nav.Section>
 
     </Sidebar.Nav>

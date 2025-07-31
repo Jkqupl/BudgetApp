@@ -2,7 +2,8 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 import HomePage from '../pages/HomePage';
-import LoginPage from '../pages/LoginPage';
+import SignUp from '../pages/SignUpPage';
+import SignIn from '../pages/LoginPage';
 import MainLayout from '../layouts/MainLayout'; // includes Sidebar
 
 import IncomePage from '../pages/IncomePage';
@@ -10,20 +11,25 @@ import ExpensesPage from '../pages/ExpensesPage';
 import BudgetPage from '../pages/BudgetPage';
 import HistoryPage from '../pages/HistoryPage';
 import DashboardPage from '../pages/DashboardPage';
+import Profile from '../pages/ProfilePage'; // 
+
+import PrivateRoute from '../components/PrivateRoute'; // for protecting routes
 
 const AppRoutes = () => (
   <Routes>
     {/* Public routes (no sidebar) */}
     <Route path="/" element={<HomePage />} />
-    <Route path="/login" element={<LoginPage />} />
+    <Route path="/login" element={<SignIn />} />
+    <Route path="/signup" element={<SignUp />} />
 
     {/* Protected/main routes (with sidebar via MainLayout) */}
     <Route element={<MainLayout />}>
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/income" element={<IncomePage />} />
-      <Route path="/expenses" element={<ExpensesPage />} />
-      <Route path="/budget" element={<BudgetPage />} />
-      <Route path="/history" element={<HistoryPage />} />
+      <Route path="/profile" element={ <PrivateRoute> <Profile/> </PrivateRoute> } />
+      <Route path="/dashboard" element={ <PrivateRoute> <DashboardPage/> </PrivateRoute> } />
+      <Route path="/income" element={<PrivateRoute> <IncomePage /> </PrivateRoute> } />
+      <Route path="/expenses" element={<PrivateRoute>  <ExpensesPage />  </PrivateRoute>} />
+      <Route path="/budget" element={<PrivateRoute>  <BudgetPage />  </PrivateRoute>} />
+      <Route path="/history" element={<PrivateRoute>  <HistoryPage />   </PrivateRoute>} />
     </Route>
   </Routes>
 );
