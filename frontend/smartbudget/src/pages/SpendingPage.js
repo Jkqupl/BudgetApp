@@ -195,7 +195,7 @@ const filteredSpending = useMemo(() => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <p className="text-gray-600 text-sm">Total Spent</p>
-          <p className="text-2xl font-bold text-red-600">${totalSpent.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-red-600">£{totalSpent.toFixed(2)}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <p className="text-gray-600 text-sm">Transactions</p>
@@ -204,7 +204,7 @@ const filteredSpending = useMemo(() => {
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <p className="text-gray-600 text-sm">Avg per Transaction</p>
           <p className="text-2xl font-bold text-green-600">
-            ${filteredSpending.length > 0 ? (totalSpent / filteredSpending.length).toFixed(2) : '0.00'}
+            £{filteredSpending.length > 0 ? (totalSpent / filteredSpending.length).toFixed(2) : '0.00'}
           </p>
         </div>
       </div>
@@ -260,7 +260,7 @@ const filteredSpending = useMemo(() => {
                 <p className="text-sm text-gray-500">{new Date(expense.date).toLocaleDateString()}</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-red-600 font-semibold">${expense.amount.toFixed(2)}</span>
+                <span className="text-red-600 font-semibold">£{expense.amount.toFixed(2)}</span>
                 <button onClick={() => { setEditingExpense(expense); setFormData({ ...expense, date: expense.date.split('T')[0] }); setShowAddForm(true); }}>
                   <Edit3 className="h-5 w-5 text-blue-500" />
                 </button>
