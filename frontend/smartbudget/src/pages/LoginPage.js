@@ -10,7 +10,7 @@ const SignIn = () => {
     const[loading, setLoading] = useState("");
 
     const {session, signInUser} = UserAuth();
-    console.log(session);
+    // console.log(session);
     const Navigate = useNavigate();
     const handleSignIn = async (e) => {
         e.preventDefault();

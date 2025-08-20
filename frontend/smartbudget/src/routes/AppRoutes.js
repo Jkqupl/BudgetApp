@@ -7,7 +7,7 @@ import SignIn from '../pages/LoginPage';
 import MainLayout from '../layouts/MainLayout'; // includes Sidebar
 
 import IncomePage from '../pages/IncomePage';
-import ExpensesPage from '../pages/ExpensesPage';
+import ExpensesPage from '../pages/SpendingPage';
 import BudgetPage from '../pages/BudgetPage';
 import HistoryPage from '../pages/HistoryPage';
 import DashboardPage from '../pages/DashboardPage';
