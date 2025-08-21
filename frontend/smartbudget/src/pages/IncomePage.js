@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Plus, Edit3, Trash2, Filter, Calendar, DollarSign, TrendingUp, Repeat } from 'lucide-react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, LineElement, PointElement } from 'chart.js';
-import { Pie, Bar, Line } from 'react-chartjs-2';
+import { Doughnut, Bar, Line } from 'react-chartjs-2';
 import { supabase } from '../supabaseClient';
 import { UserAuth } from '../context/AuthContext';
 
@@ -16,7 +16,7 @@ const IncomePage = () => {
   const [editingIncome, setEditingIncome] = useState(null);
   const [filterSource, setFilterSource] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
-  const [chartType, setChartType] = useState('pie'); // pie, bar, line
+  const [chartType, setChartType] = useState('donut'); // donut, bar, line
 
   const [formData, setFormData] = useState({
     amount: '',
@@ -162,8 +162,8 @@ const IncomePage = () => {
   const totalIncome = filteredIncome.reduce((sum, entry) => sum + parseFloat(entry.amount), 0);
   const recurringIncome = filteredIncome.filter(entry => entry.is_recurring).reduce((sum, entry) => sum + parseFloat(entry.amount), 0);
 
-  // Chart data
-  const pieChartData = useMemo(() => {
+  // Chart data - now for donut chart
+  const donutChartData = useMemo(() => {
     const sourceTotals = filteredIncome.reduce((acc, entry) => {
       const sourceName = entry.income_sources?.name || 'Unknown';
       const sourceColor = entry.income_sources?.color || '#6B7280';
@@ -179,7 +179,8 @@ const IncomePage = () => {
         data: Object.values(sourceTotals).map(source => source.total),
         backgroundColor: Object.values(sourceTotals).map(source => source.color),
         borderWidth: 2,
-        borderColor: '#ffffff'
+        borderColor: '#ffffff',
+        cutout: '60%' // This creates the donut effect
       }]
     };
   }, [filteredIncome]);
@@ -207,36 +208,60 @@ const IncomePage = () => {
   }, [filteredIncome]);
 
   // Monthly trend data for line chart
- // Monthly trend data for line chart
-const lineChartData = useMemo(() => {
-  const monthlyData = {};
+  const lineChartData = useMemo(() => {
+    const monthlyData = {};
 
-  filteredIncome.forEach(entry => {
-    const date = new Date(entry.date);
-    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; 
-    // e.g. "2024-01"
-    monthlyData[key] = (monthlyData[key] || 0) + parseFloat(entry.amount);
-  });
+    filteredIncome.forEach(entry => {
+      const date = new Date(entry.date);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; 
+      // e.g. "2024-01"
+      monthlyData[key] = (monthlyData[key] || 0) + parseFloat(entry.amount);
+    });
 
-  // Sort keys by real date
-  const sortedKeys = Object.keys(monthlyData).sort((a, b) => new Date(a) - new Date(b));
+    // Sort keys by real date
+    const sortedKeys = Object.keys(monthlyData).sort((a, b) => new Date(a) - new Date(b));
 
-  return {
-    labels: sortedKeys.map(key => {
-      const [year, month] = key.split('-');
-      return new Date(year, month - 1).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
-    }),
-    datasets: [{
-      label: 'Monthly Income',
-      data: sortedKeys.map(key => monthlyData[key]),
-      borderColor: '#3B82F6',
-      backgroundColor: '#3B82F680',
-      fill: true,
-      tension: 0.4
-    }]
+    return {
+      labels: sortedKeys.map(key => {
+        const [year, month] = key.split('-');
+        return new Date(year, month - 1).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+      }),
+      datasets: [{
+        label: 'Monthly Income',
+        data: sortedKeys.map(key => monthlyData[key]),
+        borderColor: '#3B82F6',
+        backgroundColor: '#3B82F680',
+        fill: true,
+        tension: 0.4
+      }]
+    };
+  }, [filteredIncome]);
+
+  // Donut chart specific options
+  const donutChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'right',
+        align: 'center',
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const label = context.label || '';
+            const value = context.parsed;
+            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+            const percentage = ((value / total) * 100).toFixed(1);
+            return `${label}: £${value.toLocaleString()} (${percentage}%)`;
+          }
+        }
+      }
+    },
+    layout: {
+      padding: 20
+    }
   };
-}, [filteredIncome]);
-
 
   const chartOptions = {
     responsive: true,
@@ -248,7 +273,7 @@ const lineChartData = useMemo(() => {
       tooltip: {
         callbacks: {
           label: function(context) {
-            return `${context.label}: $${context.parsed.toLocaleString()}`;
+            return `${context.label}: £${context.parsed.toLocaleString()}`;
           }
         }
       }
@@ -331,7 +356,7 @@ const lineChartData = useMemo(() => {
           onChange={(e) => setChartType(e.target.value)} 
           className="border rounded-md px-3 py-1 text-sm"
         >
-          <option value="pie">Pie Chart</option>
+          <option value="donut">Donut Chart</option>
           <option value="bar">Bar Chart</option>
           <option value="line">Line Chart</option>
         </select>
@@ -433,12 +458,14 @@ const lineChartData = useMemo(() => {
       )}
 
       {/* Charts */}
-      <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
+      <div className="bg-white p-6 rounded-lg shadow-sm border mb-6">
         <h2 className="text-lg font-semibold mb-4">Income Visualization</h2>
-        <div className="h-80">
-          {chartType === 'pie' && <Pie data={pieChartData} options={chartOptions} />}
-          {chartType === 'bar' && <Bar data={barChartData} options={chartOptions} />}
-          {chartType === 'line' && <Line data={lineChartData} options={chartOptions} />}
+        <div className="flex justify-center">
+          <div className="h-80 w-full max-w-2xl">
+            {chartType === 'donut' && <Doughnut data={donutChartData} options={donutChartOptions} />}
+            {chartType === 'bar' && <Bar data={barChartData} options={chartOptions} />}
+            {chartType === 'line' && <Line data={lineChartData} options={chartOptions} />}
+          </div>
         </div>
       </div>
 

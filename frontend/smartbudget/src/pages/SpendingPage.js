@@ -16,6 +16,7 @@ const SpendingPage = () => {
   const [editingExpense, setEditingExpense] = useState(null);
   const [filterCategory, setFilterCategory] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
+  const [chartType, setChartType] = useState('horizontal-bar'); // Default to horizontal bar
 
   const [formData, setFormData] = useState({
     amount: '',
@@ -149,8 +150,9 @@ const filteredSpending = useMemo(() => {
 
   const totalSpent = filteredSpending.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
 
-  const pieChartData = useMemo(() => {
-    const categoryTotals = filteredSpending.reduce((acc, expense) => {
+  // Category data for both charts
+  const categoryData = useMemo(() => {
+    return filteredSpending.reduce((acc, expense) => {
       const categoryName = expense.categories?.name || 'Uncategorized';
       const categoryColor = expense.categories?.color || '#6B7280';
       if (!acc[categoryName]) {
@@ -159,16 +161,37 @@ const filteredSpending = useMemo(() => {
       acc[categoryName].total += parseFloat(expense.amount);
       return acc;
     }, {});
+  }, [filteredSpending]);
+
+  const pieChartData = useMemo(() => {
     return {
-      labels: Object.keys(categoryTotals),
+      labels: Object.keys(categoryData),
       datasets: [{
-        data: Object.values(categoryTotals).map(cat => cat.total),
-        backgroundColor: Object.values(categoryTotals).map(cat => cat.color),
+        data: Object.values(categoryData).map(cat => cat.total),
+        backgroundColor: Object.values(categoryData).map(cat => cat.color),
         borderWidth: 2,
         borderColor: '#ffffff'
       }]
     };
-  }, [filteredSpending]);
+  }, [categoryData]);
+
+  const pieChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const percentage = ((context.parsed / totalSpent) * 100).toFixed(1);
+            return `${context.label}: £${context.parsed.toFixed(2)} (${percentage}%)`;
+          }
+        }
+      }
+    },
+  };
 
   if (loading) {
     return (
@@ -224,6 +247,10 @@ const filteredSpending = useMemo(() => {
           <option value="week">This Week</option>
           <option value="month">This Month</option>
         </select>
+        <select value={chartType} onChange={(e) => setChartType(e.target.value)} className="border rounded-md px-3 py-1 text-sm">
+          <option value="horizontal-bar">Category Breakdown</option>
+          <option value="pie">Pie Chart</option>
+        </select>
       </div>
 
       {/* Add/Edit Form */}
@@ -246,7 +273,46 @@ const filteredSpending = useMemo(() => {
       {/* Charts */}
       <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
         <h2 className="text-lg font-semibold mb-4">Spending by Category</h2>
-        <Pie data={pieChartData} />
+        
+        {chartType === 'horizontal-bar' ? (
+          <div className="space-y-4">
+            
+            {/* Category Breakdown */}
+            <div className="space-y-3">
+              {Object.entries(categoryData)
+                .sort(([,a], [,b]) => b.total - a.total) // Sort by amount descending
+                .map(([categoryName, data]) => {
+                  const percentage = ((data.total / totalSpent) * 100).toFixed(1);
+                  return (
+                    <div key={categoryName} className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium" style={{ color: data.color }}>
+                          {percentage}% {categoryName}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          £{data.total.toLocaleString()}
+                        </span>
+                      </div>
+                      {/* Progress bar */}
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="h-2 rounded-full transition-all duration-300" 
+                          style={{ 
+                            width: `${percentage}%`, 
+                            backgroundColor: data.color 
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        ) : (
+          <div className="h-80">
+            <Pie data={pieChartData} options={pieChartOptions} />
+          </div>
+        )}
       </div>
 
       {/* Transactions List */}

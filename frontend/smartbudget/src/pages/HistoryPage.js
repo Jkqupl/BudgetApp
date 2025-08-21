@@ -1,11 +1,26 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, TrendingUp, TrendingDown, PoundSterlingIcon, BarChart3 } from 'lucide-react';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Calendar, TrendingUp, TrendingDown, PoundSterling, BarChart3 } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import { UserAuth } from '../context/AuthContext';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const HistoryPage = () => {
   const { session } = UserAuth();
@@ -137,32 +152,12 @@ const HistoryPage = () => {
       return new Date(a) - new Date(b);
     });
     
-    const incomeData = sortedPeriods.map(period => incomeGrouped[period] || 0);
-    const expenseData = sortedPeriods.map(period => -(expenseGrouped[period] || 0)); // Negative for below x-axis
-    
-    return {
-      labels: sortedPeriods,
-      datasets: [
-        {
-          label: 'Income',
-          data: incomeData,
-          backgroundColor: 'rgba(34, 197, 94, 0.8)',
-          borderColor: 'rgb(34, 197, 94)',
-          borderWidth: 1,
-          borderRadius: 4,
-          borderSkipped: false,
-        },
-        {
-          label: 'Expenses',
-          data: expenseData,
-          backgroundColor: 'rgba(239, 68, 68, 0.8)',
-          borderColor: 'rgb(239, 68, 68)',
-          borderWidth: 1,
-          borderRadius: 4,
-          borderSkipped: false,
-        }
-      ]
-    };
+    return sortedPeriods.map(period => ({
+      period,
+      income: incomeGrouped[period] || 0,
+      expenses: expenseGrouped[period] || 0,
+      net: (incomeGrouped[period] || 0) - (expenseGrouped[period] || 0)
+    }));
   }, [filteredData, groupBy]);
 
   // Calculate summary statistics
@@ -182,14 +177,14 @@ const HistoryPage = () => {
     };
   }, [filteredData]);
 
+  // Chart.js configuration
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    interaction: {
-      mode: 'index',
-      intersect: false,
-    },
     plugins: {
+      legend: {
+        position: 'top',
+      },
       title: {
         display: true,
         text: 'Income vs Expenses Over Time',
@@ -198,42 +193,55 @@ const HistoryPage = () => {
           weight: 'bold'
         }
       },
-      legend: {
-        position: 'top',
-      },
       tooltip: {
         callbacks: {
           label: function(context) {
-            const label = context.dataset.label;
-            const value = Math.abs(context.parsed.y);
-            return `${label}: $${value.toLocaleString()}`;
+            const label = context.dataset.label || '';
+            const value = context.parsed.y;
+            return `${label}: £${value.toLocaleString()}`;
           }
         }
       }
     },
     scales: {
       x: {
-        grid: {
-          display: false,
-        },
+        title: {
+          display: true,
+          text: 'Time Period'
+        }
       },
       y: {
-        beginAtZero: true,
-        grid: {
-          color: function(context) {
-            if (context.tick.value === 0) {
-              return 'rgba(0, 0, 0, 0.3)'; // Darker line at zero
-            }
-            return 'rgba(0, 0, 0, 0.1)';
-          },
+        title: {
+          display: true,
+          text: 'Amount (£)'
         },
         ticks: {
           callback: function(value) {
-            return '£' + Math.abs(value).toLocaleString();
+            return '£' + value.toLocaleString();
           }
         }
-      }
+      },
     },
+  };
+
+  const chartJsData = {
+    labels: chartData.map(data => data.period),
+    datasets: [
+      {
+        label: 'Income',
+        data: chartData.map(data => data.income),
+        backgroundColor: 'rgba(34, 197, 94, 0.8)',
+        borderColor: 'rgba(34, 197, 94, 1)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Expenses',
+        data: chartData.map(data => data.expenses),
+        backgroundColor: 'rgba(237, 19, 19, 0.8)',
+        borderColor: 'hsla(6, 79%, 49%, 1.00)',
+        borderWidth: 1,
+      },
+    ],
   };
 
   if (loading) {
@@ -279,10 +287,10 @@ const HistoryPage = () => {
         
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center gap-2 mb-2">
-            <PoundSterlingIcon className="h-5 w-5 text-blue-600" />
+            <PoundSterling className="h-5 w-5 text-blue-600" />
             <p className="text-gray-600 text-sm">Net Income</p>
           </div>
-          <p className={`text-2xl font-bold £{summaryStats.netIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          <p className={`text-2xl font-bold ${summaryStats.netIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}>
             £{summaryStats.netIncome.toLocaleString()}
           </p>
         </div>
@@ -292,7 +300,7 @@ const HistoryPage = () => {
             <Calendar className="h-5 w-5 text-purple-600" />
             <p className="text-gray-600 text-sm">Savings Rate</p>
           </div>
-          <p className={`text-2xl font-bold £{summaryStats.savingsRate >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          <p className={`text-2xl font-bold ${summaryStats.savingsRate >= 0 ? 'text-green-600' : 'text-red-600'}`}>
             {summaryStats.savingsRate.toFixed(1)}%
           </p>
         </div>
@@ -330,25 +338,10 @@ const HistoryPage = () => {
         </div>
       </div>
 
-      {/* Chart */}
+      {/* Chart.js Bar Chart */}
       <div className="bg-white p-6 rounded-lg shadow-sm border mb-6">
-        <div className="h-96">
-          <Bar data={chartData} options={chartOptions} />
-        </div>
-        
-        {/* Chart Legend/Info */}
-        <div className="mt-4 pt-4 border-t flex flex-wrap gap-6 text-sm text-gray-600">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500 rounded"></div>
-            <span>Income (above baseline)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500 rounded"></div>
-            <span>Expenses (below baseline)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span>Net income = Income - Expenses</span>
-          </div>
+        <div style={{ height: '400px' }}>
+          <Bar data={chartJsData} options={chartOptions} />
         </div>
       </div>
 
