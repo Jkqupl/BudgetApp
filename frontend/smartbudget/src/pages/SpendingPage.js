@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, Edit3, Trash2, Filter, Calendar, DollarSign, Tag } from 'lucide-react';
+import { Plus, Edit3, Trash2, Filter, Sigma,PoundSterling, Receipt } from 'lucide-react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { supabase } from '../supabaseClient';
 import { UserAuth } from '../context/AuthContext';
+import StatCard from '../components/StatCard';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
@@ -216,20 +217,28 @@ const filteredSpending = useMemo(() => {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <p className="text-gray-600 text-sm">Total Spent</p>
-          <p className="text-2xl font-bold text-red-600">£{totalSpent.toFixed(2)}</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <p className="text-gray-600 text-sm">Transactions</p>
-          <p className="text-2xl font-bold text-blue-600">{filteredSpending.length}</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <p className="text-gray-600 text-sm">Avg per Transaction</p>
-          <p className="text-2xl font-bold text-green-600">
-            £{filteredSpending.length > 0 ? (totalSpent / filteredSpending.length).toFixed(2) : '0.00'}
-          </p>
-        </div>
+
+        <StatCard
+          icon={PoundSterling}
+          label="Total Spent"
+          value={`£${totalSpent.toFixed(2)}`}
+          color="text-red-600"
+        />
+
+        <StatCard
+          icon={Receipt}
+          label="Transactions"
+          value={filteredSpending.length}
+          color="text-blue-600"
+        />
+  
+        <StatCard
+          icon={Sigma}
+          label="Avg per Transaction"
+          value={`£${filteredSpending.length > 0 ? (totalSpent / filteredSpending.length).toFixed(2) : '0.00'}`}
+          color="text-purple-600"
+        />
+
       </div>
 
       {/* Filters */}

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, Edit3, Trash2, Filter, Calendar, DollarSign, TrendingUp, Repeat } from 'lucide-react';
+import { Plus, Edit3, Trash2, Filter, Calendar, PoundSterling, TrendingUp, Repeat, NotebookText,Sigma } from 'lucide-react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, LineElement, PointElement } from 'chart.js';
 import { Doughnut, Bar, Line } from 'react-chartjs-2';
 import { supabase } from '../supabaseClient';
 import { UserAuth } from '../context/AuthContext';
+import StatCard from '../components/StatCard';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, LineElement, PointElement);
 
@@ -303,27 +304,36 @@ const IncomePage = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <p className="text-gray-600 text-sm">Total Income</p>
-          <p className="text-2xl font-bold text-green-600">£{totalIncome.toFixed(2)}</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <p className="text-gray-600 text-sm">Entries</p>
-          <p className="text-2xl font-bold text-blue-600">{filteredIncome.length}</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <p className="text-gray-600 text-sm">Avg per Entry</p>
-          <p className="text-2xl font-bold text-purple-600">
-            £{filteredIncome.length > 0 ? (totalIncome / filteredIncome.length).toFixed(2) : '0.00'}
-          </p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <p className="text-gray-600 text-sm flex items-center gap-1">
-            <Repeat className="h-4 w-4" />
-            Recurring Income
-          </p>
-          <p className="text-2xl font-bold text-orange-600">£{recurringIncome.toFixed(2)}</p>
-        </div>
+
+     
+        <StatCard
+          icon={PoundSterling}
+          label="Total Income"
+          value={`£${totalIncome.toFixed(2)}`}
+          color="text-green-600"
+        />
+
+        <StatCard
+          icon={NotebookText}
+          label="Entries"
+          value={filteredIncome.length}
+          color="text-blue-600" 
+        />
+
+        <StatCard
+          icon={Sigma}
+          label="Avg per Entry"
+          value={`£${filteredIncome.length > 0 ? (totalIncome / filteredIncome.length).toFixed(2) : '0.00'}`}
+          color="text-purple-600"
+        />
+
+        <StatCard
+          icon={Repeat}
+          label="Recurring Income"
+          value={`£${recurringIncome.toFixed(2)}`}
+          color="text-orange-600"
+        />
+
       </div>
 
       {/* Filters */}

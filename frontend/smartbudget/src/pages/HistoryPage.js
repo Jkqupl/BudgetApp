@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Calendar, TrendingUp, TrendingDown, PoundSterling, BarChart3 } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import { UserAuth } from '../context/AuthContext';
+import StatCard from '../components/StatCard';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -265,45 +266,35 @@ const HistoryPage = () => {
 
       {/* Summary Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-5 w-5 text-green-600" />
-            <p className="text-gray-600 text-sm">Total Income</p>
-          </div>
-          <p className="text-2xl font-bold text-green-600">
-            £{summaryStats.totalIncome.toLocaleString()}
-          </p>
-        </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingDown className="h-5 w-5 text-red-600" />
-            <p className="text-gray-600 text-sm">Total Expenses</p>
-          </div>
-          <p className="text-2xl font-bold text-red-600">
-            £{summaryStats.totalExpenses.toLocaleString()}
-          </p>
-        </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center gap-2 mb-2">
-            <PoundSterling className="h-5 w-5 text-blue-600" />
-            <p className="text-gray-600 text-sm">Net Income</p>
-          </div>
-          <p className={`text-2xl font-bold ${summaryStats.netIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            £{summaryStats.netIncome.toLocaleString()}
-          </p>
-        </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center gap-2 mb-2">
-            <Calendar className="h-5 w-5 text-purple-600" />
-            <p className="text-gray-600 text-sm">Savings Rate</p>
-          </div>
-          <p className={`text-2xl font-bold ${summaryStats.savingsRate >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {summaryStats.savingsRate.toFixed(1)}%
-          </p>
-        </div>
+
+        <StatCard 
+          icon={TrendingUp}
+          label="Total Income"
+          value={`£${summaryStats.totalIncome.toLocaleString()}`}
+          color="text-green-600"
+        />
+
+        <StatCard 
+          icon={TrendingDown}
+          label="Total Spending"
+          value={`£${summaryStats.totalExpenses.toLocaleString()}`}
+          color="text-red-600"
+        />
+
+        <StatCard
+          icon={PoundSterling}
+          label="Net Income"
+          value={`£${summaryStats.netIncome.toLocaleString()}`}
+          color={summaryStats.netIncome >= 0 ? 'text-green-600' : 'text-red-600'}
+        />
+    
+        <StatCard
+          icon={Calendar}
+          label="Savings Rate"
+          value={`${summaryStats.savingsRate.toFixed(1)}%`}
+          color={summaryStats.savingsRate >= 0 ? 'text-green-600' : 'text-red-600'}
+        />
+
       </div>
 
       {/* Controls */}
