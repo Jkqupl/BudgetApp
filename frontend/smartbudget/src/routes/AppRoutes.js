@@ -8,7 +8,7 @@ import MainLayout from '../layouts/MainLayout'; // includes Sidebar
 
 import IncomePage from '../pages/IncomePage';
 import ExpensesPage from '../pages/SpendingPage';
-import BudgetPage from '../pages/BudgetPage';
+import GoalsPage from '../pages/GoalsPage';
 import HistoryPage from '../pages/HistoryPage';
 import DashboardPage from '../pages/DashboardPage';
 import Profile from '../pages/ProfilePage'; // 
@@ -28,7 +28,7 @@ const AppRoutes = () => (
       <Route path="/dashboard" element={ <PrivateRoute> <DashboardPage/> </PrivateRoute> } />
       <Route path="/income" element={<PrivateRoute> <IncomePage /> </PrivateRoute> } />
       <Route path="/expenses" element={<PrivateRoute>  <ExpensesPage />  </PrivateRoute>} />
-      <Route path="/budget" element={<PrivateRoute>  <BudgetPage />  </PrivateRoute>} />
+      <Route path="/goals" element={<PrivateRoute>  <GoalsPage />  </PrivateRoute>} />
       <Route path="/history" element={<PrivateRoute>  <HistoryPage />   </PrivateRoute>} />
     </Route>
   </Routes>

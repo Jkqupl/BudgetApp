@@ -97,12 +97,12 @@ function SideBarComponent() {
         <Sidebar.Nav.Section.Item
           as={({ className }) => (
             <NavLink
-              to="/budget"
+              to="/goals"
               className={({ isActive }) =>
                 `${className} ${isActive ? "active bg-gray-100" : ""}`
               }
             >
-              Budget
+              Goals
             </NavLink>
           )}
         />
