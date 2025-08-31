@@ -46,6 +46,7 @@ const DashboardPage = () => {
   const { sortedCategoryEntries, pieChartData } = useCategoryData(filteredSpending);
   const { donutChartData, barChartData, lineChartData, donutChartOptions, chartOptions } = useIncomeCharts(filteredIncome);
 
+
   const loading = incomeLoading || spendingLoading || goalsLoading || financialLoading;
 
   if (loading) {

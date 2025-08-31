@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }) => {
             return { success: true, data };
         }catch (error) {
             console.error("Error signing in:", error);
+            return { success: false, error };
         }
        
     };
