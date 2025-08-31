@@ -23,7 +23,7 @@ export const useIncomeCharts = (filteredIncome) => {
         backgroundColor: Object.values(sourceTotals).map(source => source.color),
         borderWidth: 2,
         borderColor: '#ffffff',
-        cutout: '60%' // Creates the donut effect
+        cutout: '80%' // Creates the donut effect
       }]
     };
   }, [sourceTotals]);

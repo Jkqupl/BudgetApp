@@ -3,6 +3,8 @@ import { Sidebar, useSidebar, Overlay} from '@rewind-ui/core';
 import { NavLink, Outlet } from 'react-router-dom';
 import { UserAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import '../index.css';
+
 
 function SideBarComponent() {
   const [expanded, setExpanded] = useState(true);
@@ -24,7 +26,7 @@ function SideBarComponent() {
   };
   return (
     <div className="relative flex flex-row w-full h-screen">
-      <Sidebar color="white" shadow="sm"
+      <Sidebar color="grey" shadow="sm"
         onToggle={(state) => {
           setExpanded(state.expanded);
           setMobile(state.mobile);
@@ -133,12 +135,12 @@ function SideBarComponent() {
 
     </Sidebar.Nav>
 
-        <Sidebar.Footer>
+        {/* <Sidebar.Footer>
           <div className="flex flex-col justify-center items-center text-sm">
             <span className="font-semibold">Rewind-UI</span>
             <span>version x.y.z</span>
           </div>
-        </Sidebar.Footer>
+        </Sidebar.Footer> */}
       </Sidebar>
 
        <main
@@ -154,10 +156,9 @@ function SideBarComponent() {
       />
     )}
 
-    <header className="flex flex-row sticky top-0 px-8 items-center bg-white border-b border-b-gray-100 w-full shadow-sm min-h-[4rem]">
+    {/* <header className="flex flex-row sticky top-0 px-8 items-center bg-white border-b border-b-gray-100 w-full shadow-sm min-h-[4rem]">
       <span>Navbar</span>
-      {/* Toggle button */}
-    </header>
+    </header> */}
 
     <div className="w-full flex-1 p-8 overflow-auto">
       <Outlet />

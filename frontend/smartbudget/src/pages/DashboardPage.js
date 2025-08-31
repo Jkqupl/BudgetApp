@@ -18,6 +18,7 @@ import SpendingCharts from '../components/SpendingComponents/SpendingCharts';
 import IncomeCharts from '../components/IncomeComponents/IncomeCharts';
 import { Bar } from 'react-chartjs-2';
 import { getChartData, getChartOptions } from '../charts/HistoryCharts';
+import GoalsGrid from '../components/GoalsComponents/GoalsGrid';
 
 const DashboardPage = () => {
   const { session } = UserAuth();
@@ -90,7 +91,7 @@ const DashboardPage = () => {
               <p className="text-xl font-bold text-green-600">£{totalIncome?.toLocaleString() || '0'}</p>
               <p className="text-xs text-gray-500">Total Income</p>
             </div>
-            <div className="flex-1 min-h-[180px]">
+            <div className="flex-1 min-h-[180px] [&>div]:border-0 [&>div]:shadow-none [&>div]:bg-transparent [&>div]:p-0">
               <IncomeCharts
                 chartType="donut"
                 donutChartData={donutChartData}
@@ -99,7 +100,17 @@ const DashboardPage = () => {
                 donutChartOptions={{
                   ...donutChartOptions,
                   maintainAspectRatio: false,
-                  responsive: true
+                  responsive: true,
+                   plugins: {
+                    legend: {
+                      position: "bottom", // ⬅️ Moves categories to bottom
+                      labels: {
+                        boxWidth: 12,
+                        font: { size: 12 }
+                      }
+                    }
+                  }
+
                 }}
                 chartOptions={chartOptions}
               />
@@ -118,9 +129,9 @@ const DashboardPage = () => {
               <p className="text-xl font-bold text-red-600">£{totalSpent?.toLocaleString() || '0'}</p>
               <p className="text-xs text-gray-500">Total Spent</p>
             </div>
-            <div className="flex-1 min-h-[180px]">
+            <div className="flex-1 min-h-[180px] [&>div]:border-0 [&>div]:shadow-none [&>div]:bg-transparent [&>div]:p-0">
               <SpendingCharts
-                chartType="donut"
+                chartType="horizontal-bar"
                 sortedCategoryEntries={sortedCategoryEntries}
                 totalSpent={totalSpent}
                 pieChartData={pieChartData}
@@ -137,41 +148,30 @@ const DashboardPage = () => {
         <DashboardCard
           title="Goals Progress"
           onClick={() => handleNavigation('/goals')}
-          className="row-start-1 col-start-3 row-span-2 min-h-[580px]"
+          className="row-start-1 col-start-3 row-span-2 flex flex-col min-h-[580px]"
         >
-          {goals.length > 0 ? (
-            <div className="h-full max-h-[480px] overflow-y-auto pr-2">
-              <div className="space-y-3">
-                {goals.map((goal) => {
-                  const progress = Math.round((goal.current_amount / goal.target_amount) * 100) || 0;
-                  return (
-                    <div key={goal.id} className="p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-gray-900 text-sm truncate">{goal.name}</span>
-                        <span className="text-xs font-semibold text-gray-600">{progress}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
-                        <div 
-                          className="bg-blue-500 h-1.5 rounded-full transition-all duration-300" 
-                          style={{ width: `${Math.min(progress, 100)}%` }}
-                        ></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>£{goal.current_amount?.toLocaleString() || '0'}</span>
-                        <span>£{goal.target_amount?.toLocaleString() || '0'}</span>
-                      </div>
-                    </div>
-                  );
-                })}
+          <div className="flex-1 overflow-hidden">
+            <div className="h-full overflow-y-auto pr-2">
+              {/* Custom wrapper to override GoalsGrid's responsive grid */}
+              <div className="[&>div]:!grid-cols-1 [&>div]:!gap-3">
+                <GoalsGrid
+                  goals={goals.slice(0, 4)} // Limit to 4 goals for dashboard space
+                  financialSummary={null}
+                  onEdit={() => {}}
+                  onDelete={() => {}}
+                  onAllocate={() => {}}
+                  onToggleComplete={() => {}}
+                  readOnly={true}
+                />
               </div>
+              
+              {goals.length > 4 && (
+                <div className="text-center text-xs text-gray-500 py-2 mt-2">
+                  +{goals.length - 4} more goals
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="text-center flex flex-col items-center justify-center h-full text-gray-500">
-              <Target className="h-10 w-10 mb-3 text-gray-300" />
-              <p className="font-medium text-sm">No goals created yet</p>
-              <p className="text-xs">Click to add your first financial goal</p>
-            </div>
-          )}
+          </div>
         </DashboardCard>
 
         {/* History Card - Row 2, Columns 1 & 2 (spans both columns) */}

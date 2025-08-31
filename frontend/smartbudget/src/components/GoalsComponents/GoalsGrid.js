@@ -7,7 +7,8 @@ const GoalsGrid = ({
   onEdit, 
   onDelete, 
   onAllocate, 
-  onToggleComplete 
+  onToggleComplete,
+  readOnly = false // 👈 NEW PROP
 }) => {
   const handleEdit = (goal) => {
     onEdit(goal);
@@ -24,12 +25,14 @@ const GoalsGrid = ({
         <Target className="h-16 w-16 text-gray-400 mx-auto mb-4" />
         <h2 className="text-xl font-semibold text-gray-600 mb-2">No Goals Yet</h2>
         <p className="text-gray-500 mb-4">Start by creating your first financial goal.</p>
-        <button
-          onClick={() => onEdit(null)} // This will trigger showing the form
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
-        >
-          Create Your First Goal
-        </button>
+        {!readOnly && ( // 👈 Hide the "Create" button in readOnly
+          <button
+            onClick={() => onEdit(null)} 
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
+          >
+            Create Your First Goal
+          </button>
+        )}
       </div>
     );
   }
@@ -52,22 +55,25 @@ const GoalsGrid = ({
                 <h3 className="font-semibold text-lg">{goal.title}</h3>
                 {goal.is_completed && <CheckCircle className="h-5 w-5 text-green-600" />}
               </div>
-              <div className="flex gap-1">
-                <button
-                  onClick={() => handleEdit(goal)}
-                  className="p-1 hover:bg-gray-100 rounded transition-colors"
-                  title="Edit goal"
-                >
-                  <Edit3 className="h-4 w-4 text-blue-500" />
-                </button>
-                <button
-                  onClick={() => handleDelete(goal.id)}
-                  className="p-1 hover:bg-gray-100 rounded transition-colors"
-                  title="Delete goal"
-                >
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </button>
-              </div>
+
+              {!readOnly && ( // 👈 Hide edit/delete buttons in readOnly
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => handleEdit(goal)}
+                    className="p-1 hover:bg-gray-100 rounded transition-colors"
+                    title="Edit goal"
+                  >
+                    <Edit3 className="h-4 w-4 text-blue-500" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(goal.id)}
+                    className="p-1 hover:bg-gray-100 rounded transition-colors"
+                    title="Delete goal"
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Description */}
@@ -116,27 +122,29 @@ const GoalsGrid = ({
             )}
 
             {/* Actions */}
-            <div className="flex gap-2">
-              {!goal.is_completed && (
+            {!readOnly && ( // 👈 Hide all action buttons in readOnly
+              <div className="flex gap-2">
+                {!goal.is_completed && (
+                  <button
+                    onClick={() => onAllocate(goal)}
+                    disabled={financialSummary.availableFunds <= 0}
+                    className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white px-3 py-2 rounded-md text-sm transition-colors"
+                  >
+                    Allocate Funds
+                  </button>
+                )}
                 <button
-                  onClick={() => onAllocate(goal)}
-                  disabled={financialSummary.availableFunds <= 0}
-                  className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white px-3 py-2 rounded-md text-sm transition-colors"
+                  onClick={() => onToggleComplete(goal.id, goal.is_completed)}
+                  className={`flex-1 px-3 py-2 rounded-md text-sm transition-colors ${
+                    goal.is_completed
+                      ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
                 >
-                  Allocate Funds
+                  {goal.is_completed ? 'Mark Incomplete' : 'Mark Complete'}
                 </button>
-              )}
-              <button
-                onClick={() => onToggleComplete(goal.id, goal.is_completed)}
-                className={`flex-1 px-3 py-2 rounded-md text-sm transition-colors ${
-                  goal.is_completed
-                    ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                }`}
-              >
-                {goal.is_completed ? 'Mark Incomplete' : 'Mark Complete'}
-              </button>
-            </div>
+              </div>
+            )}
           </div>
         );
       })}

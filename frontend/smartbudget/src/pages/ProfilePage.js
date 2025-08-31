@@ -39,7 +39,6 @@ function ProfilePage() {
       setFormData({
         name: profile?.name || '',
         email: session.user.email || '',
-        password: '••••••••',
         profilePicture: profile?.profile_picture || null
       });
 
