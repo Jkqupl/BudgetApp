@@ -1,4 +1,4 @@
-import { Target, ArrowUpRight} from 'lucide-react';
+import { ArrowUpRight} from 'lucide-react';
 import { UserAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
