@@ -7,7 +7,7 @@ import { useIncome } from '../hooks/useIncome';
 import { useSpending } from '../hooks/useSpending';  
 import { useGoals } from '../hooks/useGoals';
 import { useFinancialData } from '../hooks/useFinancialData';
-import { useHistoryData } from '../hooks/useHistoryData';
+import  useHistoryData from '../hooks/useHistoryData';
 import { useFilteredSpending } from '../hooks/useFilteredSpending';
 import { useFilteredIncome } from '../hooks/useFilteredIncome';
 import { useCategoryData } from '../hooks/useCategoryData';

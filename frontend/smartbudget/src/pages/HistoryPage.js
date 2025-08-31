@@ -5,7 +5,7 @@ import { useFinancialData } from '../hooks/useFinancialData';
 import { getChartData, getChartOptions } from '../charts/HistoryCharts';
 import { FinanceInsights } from '../components/FinanceInsights';
 import { QuickStats } from '../components/QuickStats';
-import { useHistoryData } from '../hooks/useHistoryData';
+import  useHistoryData  from '../hooks/useHistoryData';
 import {
   Chart as ChartJS,
   CategoryScale,
