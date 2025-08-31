@@ -1,7 +1,7 @@
 import { Calendar, TrendingUp, TrendingDown, PoundSterling, BarChart3 } from 'lucide-react';
 import { UserAuth } from '../context/AuthContext';
 import StatCard from '../components/StatCard';
-import useFinancialData from '../hooks/useFinancialData';
+import { useFinancialData } from '../hooks/useFinancialData';
 import { getChartData, getChartOptions } from '../charts/HistoryCharts';
 import { FinanceInsights } from '../components/FinanceInsights';
 import { QuickStats } from '../components/QuickStats';
