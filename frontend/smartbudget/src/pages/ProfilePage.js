@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Eye, EyeOff, Camera, User, X } from 'lucide-react'; // Added X icon
+import {  Camera, User, X } from 'lucide-react'; // Added X icon
 import { UserAuth } from '../context/AuthContext';
-import { useCallback } from "react";
 
 
 function ProfilePage() {
-  const { session, getUserProfile, updateUserProfile, uploadProfilePicture, deleteProfilePicture } = UserAuth();
-  const [loading, setLoading] = useState(true);
+  const { 
+    session, 
+    updateUserProfile, 
+    uploadProfilePicture, 
+    deleteProfilePicture,
+    userProfile,
+    profileLoading,
+  } = UserAuth();
+  
   const [saving, setSaving] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '••••••••',
     profilePicture: null
   });
 
@@ -23,41 +27,28 @@ function ProfilePage() {
 
   const [removeProfilePicture, setRemoveProfilePicture] = useState(false); // Flag for deletion
 
-
-  const loadProfile = useCallback( async () => {
-    try {
-      setLoading(true);
-      const result = await getUserProfile(session.user.id);
-
-      if (!result.success) {
-        console.error('Error loading profile:', result.error);
-        return;
-      }
-
-      const profile = result.data;
-
+  // Load profile data from context when it's available
+  useEffect(() => {
+    if (userProfile) {
       setFormData({
-        name: profile?.name || '',
-        email: session.user.email || '',
-        profilePicture: profile?.profile_picture || null
+        name: userProfile?.name || '',
+        email: session?.user?.email || '',
+        profilePicture: userProfile?.profile_picture || null
       });
 
-      if (profile?.profile_picture) {
-        setProfilePicturePreview(profile.profile_picture);
-        setProfilePicturePath(profile.profile_picture); // Save path
+      if (userProfile?.profile_picture) {
+        setProfilePicturePreview(userProfile.profile_picture);
+        setProfilePicturePath(userProfile.profile_picture);
       }
-    } catch (error) {
-      console.error('Error loading profile:', error);
-    } finally {
-      setLoading(false);
+    } else if (session?.user && !profileLoading) {
+      // If no profile data but we have a session, set basic data
+      setFormData({
+        name: '',
+        email: session.user.email || '',
+        profilePicture: null
+      });
     }
-  },[session?.user.id,session?.user?.email, getUserProfile]);
-
-   useEffect(() => {
-    if (session?.user) {
-      loadProfile();
-    }
-  }, [session,loadProfile]);
+  }, [userProfile, session, profileLoading]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -128,7 +119,9 @@ function ProfilePage() {
       setProfilePictureFile(null);
       setRemoveProfilePicture(false);
 
-      await loadProfile();
+      // The sidebar will automatically update because updateUserProfile 
+      // in AuthContext calls refreshUserProfile after successful update
+
     } catch (error) {
       console.error('Error updating profile:', error);
       alert(`Error updating profile: ${error.message}`);
@@ -137,11 +130,8 @@ function ProfilePage() {
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
 
-  if (loading) {
+  if (profileLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-lg">Loading profile...</div>
@@ -229,33 +219,6 @@ function ProfilePage() {
           />
           <p className="text-xs text-gray-500 mt-1">
             Email cannot be changed here. Contact support if needed.
-          </p>
-        </div>
-
-        {/* Password Field */}
-        <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-            Password
-          </label>
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              value={showPassword ? "Current password hidden for security" : formData.password}
-              readOnly
-              className="shadow appearance-none border rounded w-full py-3 px-4 pr-12 text-gray-500 bg-gray-100 leading-tight cursor-not-allowed"
-            />
-            <button
-              type="button"
-              onClick={togglePasswordVisibility}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-            >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-            </button>
-          </div>
-          <p className="text-xs text-gray-500 mt-1">
-            For security reasons, passwords cannot be viewed or changed here. Use account settings to update your password.
           </p>
         </div>
 

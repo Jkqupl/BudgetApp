@@ -3,6 +3,7 @@ import { Sidebar, useSidebar, Overlay} from '@rewind-ui/core';
 import { NavLink, Outlet } from 'react-router-dom';
 import { UserAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { User } from 'lucide-react';
 import '../index.css';
 
 
@@ -12,7 +13,7 @@ function SideBarComponent() {
   const sidebar = useSidebar();
 
   const navigate = useNavigate();
-  const { signOut } = UserAuth();
+  const { signOut, session, userProfile, profileLoading } = UserAuth();
 
   const handlelogout = async (e) => {
     e.preventDefault();
@@ -22,8 +23,10 @@ function SideBarComponent() {
     }catch (error) {
       console.error("Error signing out:", error);
     }
-  
   };
+
+  const displayName = userProfile?.name || 'User';
+
   return (
     <div className="relative flex flex-row w-full h-screen">
       <Sidebar color="grey" shadow="sm"
@@ -34,7 +37,34 @@ function SideBarComponent() {
         className="absolute"
       >
         <Sidebar.Head>
-          <Sidebar.Head.Title>Rewind-UI</Sidebar.Head.Title>
+          <Sidebar.Head.Title>
+            <div className="flex items-center space-x-3 p-2">
+              {/* Profile Picture */}
+              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-2 border-gray-300 flex-shrink-0">
+                {userProfile?.profile_picture ? (
+                  <img 
+                    src={userProfile.profile_picture} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  <User className="w-6 h-6 text-gray-400" />
+                )}
+              </div>
+              
+              {/* User Name - only show when expanded */}
+              {expanded && (
+                <div className="flex flex-col min-w-0">
+                  <span className="text-sm font-semibold text-gray-800 truncate">
+                    {profileLoading ? 'Loading...' : displayName}
+                  </span>
+                  <span className="text-xs text-gray-500 truncate">
+                    {session?.user?.email}
+                  </span>
+                </div>
+              )}
+            </div>
+          </Sidebar.Head.Title>
           <Sidebar.Head.Toggle />
         </Sidebar.Head>
 

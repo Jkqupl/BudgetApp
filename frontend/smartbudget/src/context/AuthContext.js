@@ -1,10 +1,12 @@
-import { createContext, useEffect, useState, useContext } from "react";
+import { createContext, useEffect, useState, useContext, useCallback } from "react";
 import { supabase } from "../supabaseClient";   
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const[session, setSession] = useState(undefined)
+    const[userProfile, setUserProfile] = useState(null)
+    const[profileLoading, setProfileLoading] = useState(false)
 
     //Sign up
     const signUpNewUser = async (email,password) => {
@@ -78,6 +80,43 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Load and cache user profile in context
+    const loadUserProfile = useCallback(async () => {
+        if (!session?.user?.id) return;
+        
+        try {
+            setProfileLoading(true);
+            const result = await getUserProfile(session.user.id);
+            
+            if (result.success) {
+                setUserProfile(result.data);
+            } else {
+                console.error('Error loading user profile:', result.error);
+                setUserProfile(null);
+            }
+        } catch (error) {
+            console.error('Error loading user profile:', error);
+            setUserProfile(null);
+        } finally {
+            setProfileLoading(false);
+        }
+    }, [session?.user?.id]);
+
+    // Refresh user profile (to be called after updates)
+    const refreshUserProfile = useCallback(async () => {
+        await loadUserProfile();
+    }, [loadUserProfile]);
+
+    // Load profile when session changes
+    useEffect(() => {
+        if (session?.user) {
+            loadUserProfile();
+        } else {
+            setUserProfile(null);
+            setProfileLoading(false);
+        }
+    }, [session, loadUserProfile]);
+
     // Update/create user profile in your custom users table
     const updateUserProfile = async (profileData) => {
         try {
@@ -92,6 +131,9 @@ export const AuthProvider = ({ children }) => {
                 console.error("Error updating profile:", error);
                 return { success: false, error };
             }
+
+            // Refresh the cached profile data after successful update
+            await refreshUserProfile();
 
             return { success: true, data };
         } catch (error) {
@@ -147,8 +189,20 @@ export const AuthProvider = ({ children }) => {
     };
 
     return(
-        <AuthContext.Provider value = {{session, signUpNewUser, signOut,signInUser, updateUserProfile, 
-                                        uploadProfilePicture, deleteProfilePicture, getUserProfile}}>
+        <AuthContext.Provider value = {{
+            session, 
+            signUpNewUser, 
+            signOut,
+            signInUser, 
+            updateUserProfile, 
+            uploadProfilePicture, 
+            deleteProfilePicture, 
+            getUserProfile,
+            userProfile,
+            profileLoading,
+            refreshUserProfile,
+            loadUserProfile
+        }}>
             {children}
         </AuthContext.Provider>
     )
