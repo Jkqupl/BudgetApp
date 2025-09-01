@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
 
 export const useSpending = (session) => {
@@ -6,7 +6,7 @@ export const useSpending = (session) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchSpending = async () => {
+  const fetchSpending = useCallback(async () => {
     if (!session?.user?.id) return;
     try {
       const { data, error } = await supabase
@@ -28,9 +28,9 @@ export const useSpending = (session) => {
     } catch (error) {
       console.error('Error fetching spending:', error);
     }
-  };
+  }, [session?.user?.id]);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('categories')
@@ -42,7 +42,7 @@ export const useSpending = (session) => {
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
-  };
+  }, []); // No dependencies since it doesn't depend on session
 
   const addExpense = async (expenseData) => {
     try {
@@ -101,7 +101,7 @@ export const useSpending = (session) => {
         setLoading(false);
       });
     }
-  }, [session,fetchSpending,fetchCategories]);
+  }, [session, fetchSpending, fetchCategories]); // Now both functions are included
 
   return {
     spending,

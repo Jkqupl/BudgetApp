@@ -6,49 +6,63 @@ export const useFinancialDataGoals = (session) => {
   const [spending, setSpending] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchIncome = async () => {
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const fetchData = async () => {
+      try {
+        const { data: incomeData, error: incomeError } = await supabase
+          .from('income')
+          .select('*')
+          .eq('user_uuid', session.user.id);
+
+        if (incomeError) throw incomeError;
+
+        const { data: spendingData, error: spendingError } = await supabase
+          .from('spending')
+          .select('*')
+          .eq('user_uuid', session.user.id);
+
+        if (spendingError) throw spendingError;
+
+        setIncome(incomeData || []);
+        setSpending(spendingData || []);
+      } catch (err) {
+        console.error('Error fetching financial data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [session]);
+
+  // optional refetch function
+  const refetch = async () => {
     if (!session?.user?.id) return;
     try {
-      const { data, error } = await supabase
+      const { data: incomeData } = await supabase
         .from('income')
         .select('*')
         .eq('user_uuid', session.user.id);
 
-      if (error) throw error;
-      setIncome(data || []);
-    } catch (error) {
-      console.error('Error fetching income:', error);
-    }
-  };
-
-  const fetchSpending = async () => {
-    if (!session?.user?.id) return;
-    try {
-      const { data, error } = await supabase
+      const { data: spendingData } = await supabase
         .from('spending')
         .select('*')
         .eq('user_uuid', session.user.id);
 
-      if (error) throw error;
-      setSpending(data || []);
-    } catch (error) {
-      console.error('Error fetching spending:', error);
+      setIncome(incomeData || []);
+      setSpending(spendingData || []);
+    } catch (err) {
+      console.error('Error refetching data:', err);
     }
   };
-
-  useEffect(() => {
-    if (session?.user) {
-      Promise.all([fetchIncome(), fetchSpending()]).finally(() => {
-        setLoading(false);
-      });
-    }
-  }, [session,fetchIncome,fetchSpending]);
 
   return {
     income,
     spending,
     loading,
-    refetch: () => Promise.all([fetchIncome(), fetchSpending()])
+    refetch,
   };
 };
 
@@ -63,7 +77,7 @@ export const useFinancialSummary = (income, spending, goals) => {
       totalIncome,
       totalSpending,
       totalAllocated,
-      availableFunds
+      availableFunds,
     };
   }, [income, spending, goals]);
 

@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
 
 export const useGoals = (session) => {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchGoals = async () => {
+  const fetchGoals = useCallback(async () => {
     if (!session?.user?.id) return;
     try {
       const { data, error } = await supabase
@@ -19,7 +19,7 @@ export const useGoals = (session) => {
     } catch (error) {
       console.error('Error fetching goals:', error);
     }
-  };
+  }, [session?.user?.id]);
 
   const addGoal = async (goalData) => {
     try {
@@ -123,7 +123,7 @@ export const useGoals = (session) => {
         setLoading(false);
       });
     }
-  }, [session,fetchGoals]);
+  }, [session, fetchGoals]); // Now fetchGoals is included
 
   return {
     goals,
