@@ -112,7 +112,7 @@ export const useIncome = (session) => {
         setLoading(false);
       });
     }
-  }, [session]);
+  }, [session,fetchIncome,fetchIncomeSources]);
 
   return {
     income,

@@ -101,7 +101,7 @@ export const useSpending = (session) => {
         setLoading(false);
       });
     }
-  }, [session]);
+  }, [session,fetchSpending,fetchCategories]);
 
   return {
     spending,

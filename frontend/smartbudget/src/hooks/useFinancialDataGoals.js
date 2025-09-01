@@ -42,7 +42,7 @@ export const useFinancialDataGoals = (session) => {
         setLoading(false);
       });
     }
-  }, [session]);
+  }, [session,fetchIncome,fetchSpending]);
 
   return {
     income,

@@ -22,6 +22,8 @@ const useHistoryData = (income, expenses) => {
       case 'all':
         startDate = new Date('2020-01-01');
         break;
+      default:
+        startDate.setMonth(now.getMonth() - 6);
     }
 
     const filteredIncome = income.filter(item => new Date(item.date) >= startDate);

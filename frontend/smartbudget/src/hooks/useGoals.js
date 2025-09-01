@@ -123,7 +123,7 @@ export const useGoals = (session) => {
         setLoading(false);
       });
     }
-  }, [session]);
+  }, [session,fetchGoals]);
 
   return {
     goals,
